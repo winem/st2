@@ -344,6 +344,10 @@ class BaseCLIApp(object):
         username = token_obj.user
         cached_token_path = self._get_cached_token_path_for_user(username=username)
 
+        st2_cfg_stat = os.stat(ST2_CONFIG_DIRECTORY)
+        print(f"ST2_CONFIG_DIRECTORY permissions (os.stat): {oct(st2_cfg_stat.st_mode)}")
+
+        print(f"ST2_CONFIG_DIRECTORY writable (os.access): {os.access(ST2_CONFIG_DIRECTORY, os.W_OK)}")
         if not os.access(ST2_CONFIG_DIRECTORY, os.W_OK):
             # We don't have write access to the file with a cached token
             message = (

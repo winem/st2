@@ -678,11 +678,16 @@ class CLITokenCachingTestCase(unittest2.TestCase):
             fp.write(json.dumps(data))
 
         # 1. Current user has no write access to the parent directory
+        cfg_dir_state_1 = os.stat(self._mock_config_directory_path)
+        print(f"\nState before chmod - {self._mock_config_directory_path}: {oct(cfg_dir_state_1.st_mode)[-3:]}")
         os.chmod(self._mock_config_directory_path, 0o000)
+        cfg_dir_state_2 = os.stat(self._mock_config_directory_path)
+        print(f"State after chmod - {self._mock_config_directory_path}: {oct(cfg_dir_state_2.st_mode)[-3:]}")
 
         shell.LOG = mock.Mock()
         shell._cache_auth_token(token_obj=token_db)
 
+        print(f"Log warn call count: {shell.LOG.warn.call_count}\n")
         self.assertEqual(shell.LOG.warn.call_count, 1)
         log_message = shell.LOG.warn.call_args[0][0]
 
