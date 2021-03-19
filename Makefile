@@ -727,7 +727,8 @@ unit-tests: requirements .unit-tests
 	@echo
 	@echo "----- Dropping st2-test db -----"
 	@mongo st2-test --eval "db.dropDatabase();"
-	@for component in $(COMPONENTS_TEST); do\
+	#@for component in $(COMPONENTS_TEST); do\
+	@for component in st2client; do\
 		echo "==========================================================="; \
 		echo "Running tests in" $$component; \
 		echo "-----------------------------------------------------------"; \
