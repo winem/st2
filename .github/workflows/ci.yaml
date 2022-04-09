@@ -7,6 +7,7 @@ on:
       - master
       # and version branches, which only include minor versions (eg: v3.4)
       - v[0-9]+.[0-9]+
+      - selfcheck-gha
     tags:
       # also version tags, which include bugfix releases (eg: v3.4.0)
       - v[0-9]+.[0-9]+.[0-9]+
@@ -233,9 +234,12 @@ jobs:
           # prep a ci-specific dev conf file that uses runner instead of stanley
           # this user is the username of the user in GitHub actions, used for SSH, etc during
           # integration tests (important)
-          cp conf/st2.dev.conf "${ST2_CONF}" ; sed -i -e "s/stanley/${ST2_CI_USER}/" "${ST2_CONF}"
+          cp conf/st2.dev.conf "${ST2_CONF}"
+          sed -i -e "s/stanley/${ST2_CI_USER}/" "${ST2_CONF}"
+          #sed -i -e "s/stanley/${ST2_CI_USER}/" "${ST2_CONF}"
 
           sudo -E ./scripts/ci/add-itest-user-key.sh
+          ls -l /home/stanley/
       - name: Permissions Workaround
         run: |
           sudo ST2_CI_REPO_PATH="${ST2_CI_REPO_PATH}" scripts/ci/permissions-workaround.sh
