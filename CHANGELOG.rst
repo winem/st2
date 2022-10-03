@@ -47,6 +47,9 @@ Added
 * Added purging of old tokens. #5679
   Contributed by Amanda McGuinness (@amanda11 intive)
 
+* Run the st2 self-check in Github Actions. #5609
+  Contributed by @winem
+
 Changed
 ~~~~~~~
 
