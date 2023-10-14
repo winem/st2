@@ -7,6 +7,7 @@ on:
       - master
       # and version branches, which only include minor versions (eg: v3.4)
       - v[0-9]+.[0-9]+
+      - 5609-*
     tags:
       # also version tags, which include bugfix releases (eg: v3.4.0)
       - v[0-9]+.[0-9]+.[0-9]+
@@ -16,6 +17,7 @@ on:
       # Only for PRs targeting those branches
       - master
       - v[0-9]+.[0-9]+
+      - 5609-*
   schedule:
     # run every night at midnight
     - cron:  '0 0 * * *'
