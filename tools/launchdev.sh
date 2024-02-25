@@ -318,6 +318,7 @@ function st2start(){
     if [ "$load_content" = true ]; then
         # Register contents
         echo 'Registering sensors, runners, actions, rules, aliases, and policies...'
+        docker logs rabbitmq
         ${VIRTUALENV}/bin/python \
             ./st2common/bin/st2-register-content \
             --config-file $ST2_CONF --register-all --debug
