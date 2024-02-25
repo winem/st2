@@ -44,8 +44,7 @@ jobs:
     # NOTE: We always want to run job on master since we run some additional checks there (code
     # coverage, etc)
     # if: ${{ needs.pre_job.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
-    #if: false
-    if: github.ref != 'refs/heads/winem-pants-export-venv'
+    if: false
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
     runs-on: ubuntu-20.04
     strategy:
@@ -176,8 +175,7 @@ jobs:
 
   self-check:
     needs: pre_job
-    #if: false
-    if: github.ref != 'refs/heads/winem-pants-export-venv'
+    if: false
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
     runs-on: ubuntu-20.04
     strategy:
@@ -368,7 +366,6 @@ jobs:
     # coverage, etc)
     # NB: disabled. See TODO above pre_job
     # if: ${{ needs.pre_job.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
-    if: github.ref != 'refs/heads/winem-pants-export-venv'
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
     runs-on: ubuntu-20.04
     strategy:
@@ -579,7 +576,6 @@ jobs:
     # coverage, etc)
     # if: ${{ needs.pre_job.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
-    if: github.ref == 'refs/heads/winem-pants-export-venv'
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -847,7 +843,7 @@ jobs:
 
   slack-notification:
     name: Slack notification for failed master builds
-    if: github.ref != 'refs/heads/winem-pants-export-venv'
+    if: false
     needs:
       - lint-checks
       - unit-tests
