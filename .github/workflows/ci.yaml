@@ -44,7 +44,7 @@ jobs:
     # NOTE: We always want to run job on master since we run some additional checks there (code
     # coverage, etc)
     # if: ${{ needs.pre_job.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
-    if: false
+    if: github.ref != 'refs/pull/4/merge'
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
     runs-on: ubuntu-20.04
     strategy:
@@ -175,7 +175,7 @@ jobs:
 
   self-check:
     needs: pre_job
-    if: false
+    if: github.ref != 'refs/pull/4/merge'
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
     runs-on: ubuntu-20.04
     strategy:
@@ -367,6 +367,7 @@ jobs:
     # NB: disabled. See TODO above pre_job
     # if: ${{ needs.pre_job.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
+    if: github.ref != 'refs/pull/4/merge'
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -575,6 +576,7 @@ jobs:
     # NOTE: We always want to run job on master since we run some additional checks there (code
     # coverage, etc)
     # if: ${{ needs.pre_job.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
+    if: github.ref != 'refs/pull/4/merge'
     name: '${{ matrix.name }} - Python ${{ matrix.python-version-short }}'
     runs-on: ubuntu-20.04
     strategy:
@@ -843,7 +845,7 @@ jobs:
 
   slack-notification:
     name: Slack notification for failed master builds
-    if: false
+    if: github.ref != 'refs/pull/4/merge'
     needs:
       - lint-checks
       - unit-tests
