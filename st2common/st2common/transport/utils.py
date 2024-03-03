@@ -74,7 +74,7 @@ def get_connection(urls=None, connection_kwargs=None):
     kwargs.update(connection_kwargs)
 
     # NOTE: This line contains no secret values so it's OK to log it
-    LOG.debug("Using SSL context for RabbitMQ connection: %s" % (ssl_kwargs))
+    LOG.debug("Using SSL context for RabbitMQ connection: %s" % (kwargs))
 
     connection = Connection(urls, **kwargs)
     return connection
