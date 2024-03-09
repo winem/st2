@@ -319,6 +319,8 @@ function st2start(){
         # Register contents
         echo 'Registering sensors, runners, actions, rules, aliases, and policies...'
         docker logs rabbitmq
+        docker exec -it rabbitmq rabbitmq-diagnostics status
+        docker exec -it rabbitmq rabbitmq-diagnostics -q ping
         ${VIRTUALENV}/bin/python \
             ./st2common/bin/st2-register-content \
             --config-file $ST2_CONF --register-all --debug
