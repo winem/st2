@@ -288,6 +288,7 @@ class Access(object):
     @classmethod
     def publish_update(cls, model_object):
         publisher = cls._get_publisher()
+        LOG.debug("Publisher in publish_update --- %s" % publisher)
         if publisher:
             LOG.debug("persistence.base.Access.publish_update :: publisher.publish_update --- we're publisher --- %s" % model_object)
             publisher.publish_update(model_object)
