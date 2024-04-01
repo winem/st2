@@ -120,6 +120,18 @@ class KeyValuePairController(ResourceController):
         kvp_api = self._get_one_by_scope_and_name(
             name=key_ref, scope=scope, from_model_kwargs=from_model_kwargs
         )
+        if decrypt and kvp_api.secret:
+            LOG.audit(
+                "User %s decrypted the value %s ",
+                user,
+                name,
+                extra={
+                    "user": user,
+                    "scope": scope,
+                    "key_name": name,
+                    "operation": "decrypt",
+                },
+            )
 
         return kvp_api
 
@@ -200,8 +212,14 @@ class KeyValuePairController(ResourceController):
         # Set user scope prefix for the provided user (or current user if user not provided)
         # NOTE: It's very important raw_filters['prefix'] is set when requesting user scoped
         # items to avoid information leakage (aka user1 retrieves items for user2)
+        name_for_keyref = ""
+        if "name" in raw_filters and raw_filters["name"]:
+            name_for_keyref = raw_filters["name"]
+        else:
+            name_for_keyref = prefix or ""
+
         user_scope_prefix = get_key_reference(
-            name=prefix or "", scope=FULL_USER_SCOPE, user=user
+            name=name_for_keyref, scope=FULL_USER_SCOPE, user=user
         )
 
         # Special cases for ALL_SCOPE
@@ -212,6 +230,7 @@ class KeyValuePairController(ResourceController):
         kvp_apis_user = []
 
         if scope in [ALL_SCOPE, SYSTEM_SCOPE, FULL_SYSTEM_SCOPE]:
+            decrypted_keys = []
             # If user has system role, then retrieve all system scoped items
             if has_system_role:
                 raw_filters["scope"] = FULL_SYSTEM_SCOPE
@@ -227,6 +246,10 @@ class KeyValuePairController(ResourceController):
                 )
 
                 kvp_apis_system.extend(items.json or [])
+                if decrypt and items.json:
+                    decrypted_keys.extend(
+                        kv_api["name"] for kv_api in items.json if kv_api["secret"]
+                    )
             else:
                 # Otherwise if user is not an admin, then get the list of
                 # system scoped items that user is granted permission to.
@@ -241,11 +264,29 @@ class KeyValuePairController(ResourceController):
                         kvp_apis_system.append(item)
                     except Exception as e:
                         LOG.error("Unable to get key %s: %s", key, str(e))
+                        continue
+                    if decrypt and item.secret:
+                        decrypted_keys.append(key)
+            if decrypted_keys:
+                LOG.audit(
+                    "User %s decrypted the values %s ",
+                    user,
+                    decrypted_keys,
+                    extra={
+                        "User": user,
+                        "scope": FULL_SYSTEM_SCOPE,
+                        "key_name": decrypted_keys,
+                        "operation": "decrypt",
+                    },
+                )
 
         if scope in [ALL_SCOPE, USER_SCOPE, FULL_USER_SCOPE]:
             # Retrieves all the user scoped items that the current user owns.
             raw_filters["scope"] = FULL_USER_SCOPE
-            raw_filters["prefix"] = user_scope_prefix
+            if "name" in raw_filters and raw_filters["name"]:
+                raw_filters["name"] = user_scope_prefix
+            else:
+                raw_filters["prefix"] = user_scope_prefix
 
             items = self._get_all(
                 from_model_kwargs=from_model_kwargs,
@@ -257,6 +298,22 @@ class KeyValuePairController(ResourceController):
             )
 
             kvp_apis_user.extend(items.json)
+            if decrypt and items.json:
+                decrypted_keys = [
+                    kvp_api["name"] for kvp_api in items.json if kvp_api["secret"]
+                ]
+                if decrypted_keys:
+                    LOG.audit(
+                        "User %s decrypted the values %s ",
+                        user,
+                        decrypted_keys,
+                        extra={
+                            "User": user,
+                            "scope": FULL_USER_SCOPE,
+                            "key_name": decrypted_keys,
+                            "operation": "decrypt",
+                        },
+                    )
 
         return kvp_apis_system + kvp_apis_user
 

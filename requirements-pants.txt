@@ -1,0 +1,122 @@
+# Add/remove direct 3rd party dependencies here, with version constraints if necessary.
+# Then run `./pants generate-lockfiles --resolve=st2` to regenerate the lockfile.
+#
+# Please do not add transitive dependencies in this file (ie dependencies of our dependencies).
+# Use `lockfiles/st2-constraints.txt` to constrain the version of these transitive dependencies.
+#
+# Please keep this list alphabetical, with tooz backends in a separate list.
+
+apscheduler
+argcomplete
+ciso8601
+cryptography
+eventlet
+# flex parses the openapi 2 spec in our router
+flex
+# gitpython & gitdb are used for pack management
+gitdb
+gitpython
+# st2common/tests/integration/test_util_green.py requires greenlet (as does eventlet)
+greenlet
+gunicorn
+jinja2
+jsonpath-rw
+jsonschema>=3,<4
+# Kombu 5.1:
+#   - dropped py2
+#   - increase pickle protocol from 2 to 4 which might require migration
+#   - from 5.1 up to at least 5.3.5 use pickle protocol 4
+#   - switches login_method from AMQPLAIN to PLAIN
+#   - adds named_tuple_as_object=False to simplejson.dump kwargs
+# Kombu 5.2:
+#   - dropped py3.6
+#   - drops support for librabbitmq
+#   - switches from simplejson to json
+# Kombu 5.3:
+#   - dropped py3.7
+#   - drops simplejson support
+kombu>=5.0,<5.1
+lockfile
+mock
+# mongoengine 0.24.0 has breaking changes to support pymongo 4.0
+mongoengine>=0.21.0,<0.24.0
+# Note: networkx v2.6 dropped support for Python3.6
+# networkx version is constrained in orquesta.
+networkx
+orjson
+orquesta @ git+https://github.com/StackStorm/orquesta.git@v1.6.0
+# NOTE: Recent version substantially affect the performance and add big import time overhead
+# See https://github.com/StackStorm/st2/issues/4160#issuecomment-394386433 for details
+oslo.config>=1.12.1,<1.13
+paramiko
+# we use pip at runtime
+pip
+# prance is used by st2-validate-api-spec to validate the openapi spec
+# prance needs flex, but do not use the extra as that gets an old version.
+prance
+prettytable
+# For st2client: prompt-toolkit v2+ does not have prompt_toolkit.token.Token
+prompt-toolkit<2
+psutil
+# pymongo 3.13 has backports of APIs from pymongo 4 to help w/ migration
+pymongo>=3.11.0,<3.13.0
+# TODO: if this works, then mark this as a dep of eventlet
+pyOpenSSL
+# pyrabbit used in an integration test
+pyrabbit
+pytest
+python-dateutil
+python-editor
+# pythonjsonlogger referenced in st2actions/conf/logging.conf
+python-json-logger
+python-statsd
+pytz
+PyYAML
+# RandomWords used in some tests
+RandomWords
+requests
+retrying
+routes
+semver
+# setuptools provides pkg_resources (and we need it with pip at runtime)
+setuptools
+simplejson
+six
+# NOTE: we use sseclient-py instead of sseclient because sseclient
+# has various issues which sometimes hang the connection for a long time, etc.
+sseclient-py
+# bandit doesn't work w/ stevedore 3+
+stevedore<3
+# For backward compatibility reasons, flat file backend is installed by default
+st2-auth-backend-flat-file @ git+https://github.com/StackStorm/st2-auth-backend-flat-file.git@master
+st2-auth-ldap @ git+https://github.com/StackStorm/st2-auth-ldap.git@master
+st2-rbac-backend @ git+https://github.com/StackStorm/st2-rbac-backend.git@master
+# tabulate used by tools/log_watcher.py
+tabulate
+tooz
+udatetime
+ujson
+unittest2
+virtualenv
+webob
+webtest
+# we use pip+wheel at runtime
+wheel
+# zstandard is used for micro benchmarks
+zstandard
+
+# tooz backends
+redis
+zake
+
+# was in fixed-requirements.txt, but not in requirements-pants.txt
+# keyczar is used by a python2-only test.
+#python-keyczar
+
+###########
+
+# remove once we switch to pytest
+nose
+nose-timer
+nose-parallel
+rednose

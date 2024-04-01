@@ -24,7 +24,6 @@ try:
 except ImportError:
     import json
 
-import six
 import mock
 import unittest2
 from six.moves import http_client
@@ -34,7 +33,10 @@ import st2common.validators.api.action as action_validator
 from st2common.constants.pack import SYSTEM_PACK_NAME
 from st2common.persistence.pack import Pack
 from st2api.controllers.v1.actions import ActionsController
-from st2tests.fixturesloader import get_fixtures_packs_base_path
+from st2tests.fixtures.packs.dummy_pack_1.fixture import (
+    PACK_NAME as DUMMY_PACK_1,
+    PACK_PATH as DUMMY_PACK_1_PATH,
+)
 from st2tests.base import CleanFilesTestCase
 
 from st2tests.api import FunctionalTest
@@ -207,7 +209,7 @@ ACTION_12 = {
     "name": "st2.dummy.action1",
     "description": "test description",
     "enabled": True,
-    "pack": "dummy_pack_1",
+    "pack": DUMMY_PACK_1,
     "entry_point": "/tmp/test/action1.sh",
     "runner_type": "local-shell-script",
     "parameters": {
@@ -225,7 +227,7 @@ ACTION_13 = {
     "name": "st2.dummy.action2",
     "description": "test description",
     "enabled": True,
-    "pack": "dummy_pack_1",
+    "pack": DUMMY_PACK_1,
     "entry_point": "/tmp/test/action1.sh",
     "runner_type": "local-shell-script",
     "parameters": {
@@ -238,7 +240,7 @@ ACTION_14 = {
     "name": "st2.dummy.action14",
     "description": "test description",
     "enabled": True,
-    "pack": "dummy_pack_1",
+    "pack": DUMMY_PACK_1,
     "entry_point": "/tmp/test/action1.sh",
     "runner_type": "local-shell-script",
     "parameters": {
@@ -252,7 +254,7 @@ ACTION_15 = {
     "name": "st2.dummy.action15",
     "description": "test description",
     "enabled": True,
-    "pack": "dummy_pack_1",
+    "pack": DUMMY_PACK_1,
     "entry_point": "/tmp/test/action1.sh",
     "runner_type": "local-shell-script",
     "parameters": {
@@ -295,7 +297,7 @@ ACTION_WITH_NOTIFY = {
     "name": "st2.dummy.action_notify_test",
     "description": "test description",
     "enabled": True,
-    "pack": "dummy_pack_1",
+    "pack": DUMMY_PACK_1,
     "entry_point": "/tmp/test/action1.sh",
     "runner_type": "local-shell-script",
     "parameters": {
@@ -311,7 +313,7 @@ ACTION_WITH_UNICODE_NAME = {
     "name": "st2.dummy.action_unicode_我爱狗",
     "description": "test description",
     "enabled": True,
-    "pack": "dummy_pack_1",
+    "pack": DUMMY_PACK_1,
     "entry_point": "/tmp/test/action1.sh",
     "runner_type": "local-shell-script",
     "parameters": {
@@ -333,9 +335,7 @@ class ActionsControllerTestCase(
 
     register_packs = True
 
-    to_delete_files = [
-        os.path.join(get_fixtures_packs_base_path(), "dummy_pack_1/actions/filea.txt")
-    ]
+    to_delete_files = [os.path.join(DUMMY_PACK_1_PATH, "actions/filea.txt")]
 
     @mock.patch.object(
         action_validator, "validate_action", mock.MagicMock(return_value=True)
@@ -538,14 +538,9 @@ class ActionsControllerTestCase(
         post_resp = self.__do_post(ACTION_13, expect_errors=True)
         self.assertEqual(post_resp.status_int, 400)
 
-        if six.PY3:
-            expected_error = (
-                b"['string', 'object'] is not valid under any of the given schemas"
-            )
-        else:
-            expected_error = (
-                b"[u'string', u'object'] is not valid under any of the given schemas"
-            )
+        expected_error = (
+            b"['string', 'object'] is not valid under any of the given schemas"
+        )
 
         self.assertIn(expected_error, post_resp.body)
 

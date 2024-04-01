@@ -26,6 +26,7 @@ from st2common.persistence.trigger import Trigger
 from st2common.models.system.common import ResourceReference
 from st2common.transport.publishers import PoolPublisher
 from st2api.controllers.v1.rules import RuleController
+from st2tests.fixtures.generic.fixture import PACK_NAME as FIXTURES_PACK
 from st2tests.fixturesloader import FixturesLoader
 
 from st2tests.api import FunctionalTest
@@ -39,8 +40,6 @@ TEST_FIXTURES = {
     "triggers": ["trigger1.yaml"],
     "triggertypes": ["triggertype1.yaml", "triggertype_with_parameters_2.yaml"],
 }
-
-FIXTURES_PACK = "generic"
 
 
 @mock.patch.object(PoolPublisher, "publish", mock.MagicMock())
@@ -337,14 +336,9 @@ class RulesControllerTestCase(
         post_resp = self.__do_post(RulesControllerTestCase.RULE_2)
         self.assertEqual(post_resp.status_int, http_client.BAD_REQUEST)
 
-        if six.PY3:
-            expected_msg = (
-                b"Additional properties are not allowed ('minutex' was unexpected)"
-            )
-        else:
-            expected_msg = (
-                b"Additional properties are not allowed (u'minutex' was unexpected)"
-            )
+        expected_msg = (
+            b"Additional properties are not allowed ('minutex' was unexpected)"
+        )
 
         self.assertIn(expected_msg, post_resp.body)
 
@@ -386,16 +380,8 @@ class RulesControllerTestCase(
         post_resp = self.__do_post(RulesControllerTestCase.RULE_9)
         self.assertEqual(post_resp.status_int, http_client.BAD_REQUEST)
 
-        if six.PY3:
-            expected_msg_1 = (
-                "Failed validating 'type' in schema['properties']['param1']:"
-            )
-            expected_msg_2 = "12345 is not of type 'string'"
-        else:
-            expected_msg_1 = (
-                "Failed validating u'type' in schema[u'properties'][u'param1']:"
-            )
-            expected_msg_2 = "12345 is not of type u'string'"
+        expected_msg_1 = "Failed validating 'type' in schema['properties']['param1']:"
+        expected_msg_2 = "12345 is not of type 'string'"
 
         self.assertIn(expected_msg_1, post_resp.json["faultstring"])
         self.assertIn(expected_msg_2, post_resp.json["faultstring"])

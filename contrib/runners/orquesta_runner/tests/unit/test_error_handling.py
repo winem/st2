@@ -16,7 +16,6 @@
 from __future__ import absolute_import
 
 import mock
-import six
 
 from orquesta import statuses as wf_statuses
 
@@ -43,6 +42,8 @@ from st2common.services import workflows as wf_svc
 from st2common.transport import liveaction as lv_ac_xport
 from st2common.transport import workflow as wf_ex_xport
 from st2common.transport import publishers
+from st2tests.fixtures.packs.core.fixture import PACK_PATH as CORE_PACK_PATH
+from st2tests.fixtures.packs.orquesta_tests.fixture import PACK_PATH as TEST_PACK_PATH
 from st2tests.mocks import liveaction as mock_lv_ac_xport
 from st2tests.mocks import workflow as mock_wf_ex_xport
 from st2common.models.db.workflow import WorkflowExecutionDB
@@ -50,15 +51,7 @@ from st2common.models.db.workflow import TaskExecutionDB
 from st2common.models.db.execution_queue import ActionExecutionSchedulingQueueItemDB
 
 
-TEST_PACK = "orquesta_tests"
-TEST_PACK_PATH = (
-    st2tests.fixturesloader.get_fixtures_packs_base_path() + "/" + TEST_PACK
-)
-
-PACKS = [
-    TEST_PACK_PATH,
-    st2tests.fixturesloader.get_fixtures_packs_base_path() + "/core",
-]
+PACKS = [TEST_PACK_PATH, CORE_PACK_PATH]
 
 RUNNER_RESULT_FAILED = (
     ac_const.LIVEACTION_STATUS_FAILED,
@@ -339,10 +332,7 @@ class OrquestaErrorHandlingTest(st2tests.WorkflowTestCase):
         self.assertDictEqual(ac_ex_db.result, expected_result)
 
     def test_fail_start_task_input_value_type(self):
-        if six.PY3:
-            msg = "Value \"{'x': 'foobar'}\" must either be a string or None. Got \"dict\"."
-        else:
-            msg = "Value \"{u'x': u'foobar'}\" must either be a string or None. Got \"dict\"."
+        msg = "Value \"{'x': 'foobar'}\" must either be a string or None. Got \"dict\"."
 
         msg = "ValueError: " + msg
 
@@ -494,10 +484,7 @@ class OrquestaErrorHandlingTest(st2tests.WorkflowTestCase):
         self.assertDictEqual(ac_ex_db.result, expected_result)
 
     def test_fail_next_task_input_value_type(self):
-        if six.PY3:
-            msg = "Value \"{'x': 'foobar'}\" must either be a string or None. Got \"dict\"."
-        else:
-            msg = "Value \"{u'x': u'foobar'}\" must either be a string or None. Got \"dict\"."
+        msg = "Value \"{'x': 'foobar'}\" must either be a string or None. Got \"dict\"."
 
         msg = "ValueError: " + msg
 

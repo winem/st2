@@ -328,7 +328,12 @@ class Router(object):
 
         At the time of writing, the only property being utilized by middleware was `x-log-result`.
         """
-        LOG.debug("Received call with WebOb: %s", req)
+        LOG.debug("Received call with WebOb: %s %s", req.method, req.url)
+        # if a more detailed log is required:
+        # loggable_req = req.copy()
+        # loggable_req.headers.pop('Authorization', None)
+        # loggable_req.headers.pop('X-Request-Id', None)
+        # LOG.debug("Received call with WebOb: %s", loggable_req)
         endpoint, path_vars = self.match(req)
         LOG.debug("Parsed endpoint: %s", endpoint)
         LOG.debug("Parsed path_vars: %s", path_vars)
@@ -383,11 +388,22 @@ class Router(object):
                                 max_age = (
                                     auth_resp.expiry - date_utils.get_datetime_utc_now()
                                 )
+                                # NOTE: unset and none don't mean the same thing - unset implies
+                                # not setting this attribute at all (backward compatibility) and
+                                # none implies setting this attribute value to none
+                                same_site = cfg.CONF.api.auth_cookie_same_site
+
+                                kwargs = {}
+                                if same_site != "unset":
+                                    kwargs["samesite"] = same_site
+
                                 cookie_token = cookies.make_cookie(
                                     definition["x-set-cookie"],
                                     token,
                                     max_age=max_age,
                                     httponly=True,
+                                    secure=cfg.CONF.api.auth_cookie_secure,
+                                    **kwargs,
                                 )
 
                             break
@@ -494,7 +510,7 @@ class Router(object):
                         "application/x-www-form-urlencoded",
                         "multipart/form-data",
                     ]:
-                        data = urlparse.parse_qs(req.body)
+                        data = urlparse.parse_qs(six.ensure_str(req.body))
                     else:
                         raise ValueError(
                             'Unsupported Content-Type: "%s"' % (content_type)
