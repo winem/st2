@@ -318,8 +318,6 @@ function st2start(){
     if [ "$load_content" = true ]; then
         # Register contents
         echo 'Registering sensors, runners, actions, rules, aliases, and policies...'
-        docker restart rabbitmq
-        docker sleep 10
         docker logs rabbitmq
         docker exec -it rabbitmq rabbitmq-diagnostics status
         docker exec -it rabbitmq rabbitmq-diagnostics -q ping
